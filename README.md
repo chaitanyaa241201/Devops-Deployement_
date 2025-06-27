@@ -1,73 +1,169 @@
-# Welcome to your Lovable project
+# 🌟 End-to-End DevOps Deployment
 
-## Project info
+### 📖 Documented by: Chaitanya Kulkarni  
+[LinkedIn](https://www.linkedin.com/in/chaitanya-kulkarni-devopsengineer/) | [GitHub](https://github.com/chaitanyaa241201)
 
-**URL**: https://lovable.dev/projects/ccf68e36-737a-4611-840d-7c8bcf9c38af
+---
 
-## How can I edit this code?
+## ✏️ Table of Contents
 
-There are several ways of editing your application.
+1. ✨ Project Overview  
+2. 📉 Architecture Diagram  
+3. 💡 Tools & Technologies Used  
+4. ⌚ Step-by-Step Guide  
+5. 💡 Troubleshooting & Fixes  
+6. 👨‍💻 Blog Style Walkthrough  
+7. 📊 Results & Outputs  
+8. 🔢 Future Improvements  
 
-**Use Lovable**
+---
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/ccf68e36-737a-4611-840d-7c8bcf9c38af) and start prompting.
+## 1. ✨ Project Overview
 
-Changes made via Lovable will be committed automatically to this repo.
+**Goal**: Deploy a static React website hosted via Nginx, containerized using Docker, managed using Kubernetes (k3s), and provisioned with Terraform on AWS EC2.
 
-**Use your preferred IDE**
+**Live Site**: Hosted using Kubernetes NodePort on a public EC2 instance.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+---
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## 2. 📉 Architecture Diagram
 
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```
++------------------------------+
+|   GitHub Repo (Code + HTML) |
++-------------+----------------
+              |
+              v
+      +----------------+
+      |   Terraform    |  ==> Launch EC2
+      +----------------+
+              |
+              v
+      +------------------------+
+      |  EC2 Instance (Ubuntu) |
+      +-----------+------------+
+                  |
+        +---------+--------+
+        | Docker + Nginx   |
+        +---------+--------+
+                  |
+        +---------v---------+
+        |  Kubernetes (k3s) |
+        +---------+---------+
+                  |
+        +---------v---------+
+        |  React Static Site |
+        +-------------------+
 ```
 
-**Edit a file directly in GitHub**
+---
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 3. 💡 Tools & Technologies Used
 
-**Use GitHub Codespaces**
+- **Terraform** – Infrastructure as Code for EC2 provisioning  
+- **AWS EC2** – Compute environment  
+- **Docker** – Image build + Nginx server  
+- **Kubernetes (k3s)** – Lightweight K8s cluster  
+- **React (Vite)** – Frontend static site  
+- **GitHub** – Source control  
+- **MobXterm / SSH** – Instance access
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+---
 
-## What technologies are used for this project?
+## 4. ⌚ Step-by-Step Guide
 
-This project is built with:
+### 🔄 EC2 Setup with Terraform
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+```bash
+terraform init
+terraform plan
+terraform apply
+```
 
-## How can I deploy this project?
+### 🔐 SSH Access
 
-Simply open [Lovable](https://lovable.dev/projects/ccf68e36-737a-4611-840d-7c8bcf9c38af) and click on Share -> Publish.
+```bash
+ssh -i lab.pem ubuntu@<EC2_PUBLIC_IP>
+```
 
-## Can I connect a custom domain to my Lovable project?
+### 🧱 Install Docker & k3s
 
-Yes, you can!
+```bash
+curl -sfL https://get.k3s.io | sh -
+sudo apt install docker.io -y
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### 🧩 Clone and Build Static App
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+```bash
+git clone <your-repo>
+cd suncraft-solar-shine
+npm install
+npm run build
+sudo docker build -t suncraft-portfolio:v1 .
+```
+
+### 📦 Load Docker Image into k3s
+
+```bash
+sudo docker save suncraft-portfolio:v1 -o suncraft-portfolio.tar
+sudo k3s ctr images import suncraft-portfolio.tar
+```
+
+### 🚀 Deploy to Kubernetes
+
+```bash
+kubectl apply -f suncraft_deploy.yaml
+kubectl expose deployment suncraft-app --type=NodePort --port=80
+```
+
+### 🌐 View Your Website
+
+```bash
+http://<EC2_PUBLIC_IP>:<NODEPORT>
+```
+
+---
+
+## 5. 💡 Troubleshooting & Fixes
+
+- `ImagePullBackOff` → solved by importing local Docker image to k3s  
+- DiskPressure → resolved by increasing EC2 volume size  
+- Pod Pending → fixed by freeing disk space and adding swap memory  
+- Swap Setup → added 2GB swap using `/swapfile`
+
+---
+
+## 6. 👨‍💻 Blog Style Walkthrough
+
+> “I started with a React site, but wanted a real-world cloud deployment. So I built from scratch — provisioned an EC2 instance, containerized the app, managed it in Kubernetes, and made it public on AWS. Faced pod failures and disk pressure, but fixed them with resizing and swap!”
+
+**End Result**: Static site live from GitHub to AWS — infrastructure as code style 💪
+
+---
+
+## 7. 📊 Results & Outputs
+
+- ✅ EC2 provisioned via Terraform  
+- ✅ Docker image built and deployed  
+- ✅ Kubernetes pod running  
+- ✅ Website accessible publicly  
+- ✅ Infrastructure entirely automated and documented
+
+---
+
+## 8. 🔢 Future Improvements
+
+- Set up GitHub Actions for CI/CD 🚀  
+- Add Prometheus + Kubernetes Dashboard for monitoring 📊  
+- Host with Route 53 + HTTPS 🔐  
+- Push Docker image to Docker Hub 📦  
+
+---
+
+### 💼 Project by Chaitanya Kulkarni  
+🔗 [LinkedIn](https://www.linkedin.com/in/chaitanya-kulkarni-devopsengineer/)  
+📁 [GitHub](https://github.com/chaitanyaa241201)
+
+---
+

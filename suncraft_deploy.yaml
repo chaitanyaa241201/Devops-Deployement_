@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: suncraft-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: suncraft
+  template:
+    metadata:
+      labels:
+        app: suncraft
+    spec:
+      containers:
+      - name: suncraft-container
+        image: suncraft-portfolio:v1
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "250m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: suncraft-service
+spec:
+  type: NodePort
+  selector:
+    app: suncraft
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 30997
+
