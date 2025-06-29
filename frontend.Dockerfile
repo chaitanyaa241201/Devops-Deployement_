@@ -1,24 +1,24 @@
-<<<<<<< HEAD
-FROM nginx:alpine
-COPY dist /usr/share/nginx/html
-=======
-# Use an official Node.js image
-FROM node:18-alpine
+# Use Node.js base image
+FROM node:20-alpine
 
 # Set working directory
 WORKDIR /app
 
-# Copy package.json and install dependencies
-COPY package*.json ./
-RUN npm install
-
-# Copy the rest of the code
+# Copy app files
 COPY . .
 
-# Expose the backend port
-EXPOSE 3001
+# Install dependencies
+RUN npm install
 
-# Start the server
-CMD ["node", "server.js"]
->>>>>>> 9f42378 (Add backend folder with server.js and Dockerfile)
+# Build the app
+RUN npm run build
+
+# Use Nginx to serve the build
+FROM nginx:alpine
+COPY --from=0 /app/dist /usr/share/nginx/html
+
+# Expose port
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
 
