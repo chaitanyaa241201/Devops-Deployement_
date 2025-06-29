@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: suncraft-container
-        image: suncraft-portfolio:v1
+        image: suncraft-portfolio:v2
         ports:
         - containerPort: 80
         resources:

@@ -120,7 +120,8 @@ kubectl expose deployment suncraft-app --type=NodePort --port=80
 ### 🌐 View Your Website
 
 ```bash
-http://<EC2_PUBLIC_IP>:<NODEPORT>
+http://3.134.234.73:30997
+
 ```
 
 ---
